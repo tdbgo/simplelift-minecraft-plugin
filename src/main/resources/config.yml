@@ -1,0 +1,87 @@
+# SimpleLift keeps the Lift/LiftReloaded configuration keys intentionally.
+# Existing plugins/LiftReloaded/config.yml or plugins/Lift/config.yml is imported
+# automatically on the first start when this file does not exist.
+configVersion: 2
+
+# Every scan is bounded by this footprint and by the world's build height.
+maxLiftArea: 49
+maxHeight: 1023
+minHeight: -64
+
+debug: false
+autoPlace: false
+preventEntry: false
+preventLeave: true
+liftMobs: true
+mouseScroll: true
+
+# Empty-hand sign selection. Scroll changes floors without changing the held
+# hotbar slot; sneak-scroll advances several floors; F or a second sign click
+# confirms. Set timeoutSeconds to 0 to disable inactivity expiry.
+selection:
+  preserveHotbar: true
+  actionBar: true
+  timeoutSeconds: 8
+  fastStep: 5
+  confirmWithSwapKey: true
+
+secondsUntilTimeout: 2
+redstone: false
+
+floorBlocks:
+  - GLASS
+  - "*GLASS"
+  - "*STAINED_GLASS"
+  - "*IRON_TRAPDOOR"
+  - "*SMOOTH_STONE"
+
+buttonBlocks:
+  - "*BUTTON"
+
+signBlocks:
+  - "*WALL_SIGN"
+
+shaftBlocks:
+  - LADDER
+  - SNOW
+  - TORCH
+  - VINE
+  - WATER
+  - "*RAIL"
+  - REDSTONE_WIRE
+
+baseBlocks:
+  - type: IRON_BLOCK
+    speed: 0.25
+    music: false
+  - type: GOLD_BLOCK
+    speed: 0.5
+    music: false
+  - type: DIAMOND_BLOCK
+    speed: 1.0
+    music: false
+  - type: NOTE_BLOCK
+    speed: 0.2
+    music: false
+
+soundEnabled: true
+soundVolume: 100
+
+messages:
+  destination: "&7Destination"
+  currentFloor: "&7Current Floor"
+  cantEnter: "&7Can't enter elevator in use"
+  cantLeave: "&7Can't leave elevator in use"
+  oneFloor: "&7There is only one floor."
+  unsafe: "&cIt is unsafe to leave a vehicle in a lift!"
+  floorNotExists: "&cFloor does not exist. Check shaft for blockage"
+  scrollSelectEnabled: "&7Scrollable floor selection enabled. Click the sign again to exit."
+  scrollSelectDisabled: "&7Scrollable floor selection disabled"
+  scrollSelection: "&e▲ &fFloor {floor} {name} &7({index}/{total}) &e▼"
+  scrollSelectConfirmed: "&aSelected floor {floor} {name}."
+  scrollSelectTimedOut: "&7Floor selection timed out."
+  scrollSelectBusy: "&cAnother player is selecting a floor on this sign."
+  timeout: "&7You have been teleported to the destination due to timeout"
+  busy: "&cThis lift is already moving."
+  noPermission: "&cYou do not have permission."
+  internalError: "&cAn internal error occurred while processing this lift."

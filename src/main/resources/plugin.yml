@@ -1,0 +1,26 @@
+name: SimpleLift
+version: '${version}'
+main: com.playcity.simplelift.SimpleLiftPlugin
+description: A Lift/LiftReloaded-compatible elevator plugin for Minecraft servers
+author: PLAYCITY BLOCK
+api-version: '1.13'
+provides: [Lift, LiftReloaded]
+
+commands:
+  lift:
+    description: Reloads or inspects SimpleLift.
+    usage: /<command> [reload|info]
+    aliases: [simplelift]
+    permission: lift
+    permission-message: You do not have permission to use lifts.
+
+permissions:
+  lift:
+    description: Allows riding a lift and using the lift command.
+    default: true
+  lift.change:
+    description: Allows changing destinations on lift signs.
+    default: true
+  lift.reload:
+    description: Allows reloading the SimpleLift configuration.
+    default: op
