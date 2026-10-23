@@ -2,11 +2,54 @@
 
 All notable changes to SimpleLift are recorded here. Versions follow the value in `build.gradle.kts`.
 
-This file currently covers one entry. No earlier SimpleLift release exists, so no history precedes it.
+## 0.3.3-SNAPSHOT — 2026-10-24
 
-## 0.3.0-SNAPSHOT — unreleased
+- Add an optional low, descending three-note `hotel` arrival chime. Material assignments
+  retain priority over groups; document that assignments refer to material types.
+- Extend the compatibility target to Minecraft 26.3. Confirm the existing 26.3 build
+  has identical executable classes and resources, differing only in version metadata.
 
-Development snapshot. The version carries the `-SNAPSHOT` suffix, is not a published release, and may change before it is tagged. No release date is set.
+The `hotel` profile is opt-in. Existing defaults and explicit assignments are preserved.
+In-game listening checks remain pending.
+
+Clean builds against the Spigot 1.13.2 and Paper 26.3 build 218 APIs: 47 tests
+passed in each build. Java 8 bytecode. The existing 26.3 build was observed
+enabling normally on Paper 26.3 build 157; the full ride scenario matrix was
+not repeated on 26.3.
+
+## 0.3.2-SNAPSHOT — 2026-09-05
+
+- Replace the wooden-button harp melody with a lower two-note bell and retune the
+  clear bell profile to a descending ding-dong. Space the notes eight ticks apart.
+- Restore warm and clear profiles to the legacy per-note gain, and raise the
+  crystal profile's gain. Global sound volume, movement sounds, legacy,
+  and silent are unchanged.
+- Default stone buttons to crystal. Keep wooden buttons on warm and unmatched
+  buttons on legacy. Preserve explicit profile assignments in existing settings.
+
+These revised arrangements still need in-game listening checks.
+
+Clean build against the Spigot 1.13.2 API: 45 tests passed.
+
+## 0.3.1-SNAPSHOT — 2026-09-05
+
+- Add 30 bundled language presets (including regional locale aliases) and a
+  custom mode that preserves existing message translations. Refresh sign labels
+  during interaction without changing floor names or selected destinations.
+
+- Add button-based arrival chimes using vanilla wooden/stone button tags, with
+  material overrides and a default for unmatched buttons.
+- Add original `warm`, `clear`, and `crystal` note arrangements using client
+  instruments, plus `legacy` and `silent` options. No audio assets are bundled.
+- Keep one bounded chime per player and cancel pending notes on logout, shutdown,
+  successful reload, or a newer arrival. Preserve each ride's starting settings.
+- Validate profile and tag assignments before applying a configuration reload.
+
+In-game listening checks for the new chimes remain pending.
+
+## 0.3.0-SNAPSHOT — 2026-08-16
+
+First published beta snapshot. The `-SNAPSHOT` suffix marks a development prerelease.
 
 First tracked state of the plugin: a Lift/LiftReloaded-compatible elevator that derives every lift from world blocks at interaction time, with no plugin-side lift storage.
 

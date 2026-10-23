@@ -99,6 +99,9 @@ public final class LiftStructure {
         for (LiftFloor floor : floors) {
             boolean invalid = floor.signs().stream().anyMatch(sign -> !sign.isInitialized());
             if (!invalid) {
+                for (LiftSign sign : floor.signs()) {
+                    sign.refreshLabels(settings.messages(), floor.level());
+                }
                 continue;
             }
             LiftFloor destination = nextFloor(floor, floor, true);

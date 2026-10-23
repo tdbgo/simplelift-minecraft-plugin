@@ -1,6 +1,8 @@
 package com.playcity.simplelift.ride;
 
 import com.playcity.simplelift.compat.SoundEffects;
+import com.playcity.simplelift.compat.ArrivalChimes;
+import com.playcity.simplelift.config.ButtonChimes;
 import com.playcity.simplelift.compat.ServerCompatibility;
 import com.playcity.simplelift.config.ConfigLoader;
 import com.playcity.simplelift.config.LiftSettings;
@@ -40,6 +42,8 @@ final class ActiveRide {
     private final LiftStructure structure;
     private final LiftFloor destination;
     private final LiftSettings settings;
+    private final ArrivalChimes chimes;
+    private final ButtonChimes.Profile chimeProfile;
     private final Consumer<ActiveRide> onFinished;
     private final Map<UUID, Entity> passengers = new LinkedHashMap<>();
     private final Map<UUID, Entity> freezers = new LinkedHashMap<>();
@@ -51,12 +55,15 @@ final class ActiveRide {
     private int taskRuns;
     private boolean finishing;
 
-    ActiveRide(JavaPlugin plugin, LiftStructure structure, LiftFloor destination, Consumer<ActiveRide> onFinished) {
+    ActiveRide(JavaPlugin plugin, LiftStructure structure, LiftFloor destination, Consumer<ActiveRide> onFinished,
+            ArrivalChimes chimes) {
         this.plugin = plugin;
         this.structure = structure;
         this.destination = destination;
         this.settings = structure.settings();
         this.onFinished = onFinished;
+        this.chimes = chimes;
+        this.chimeProfile = settings.arrivalChime(structure.initialSign().block().getRelative(BlockFace.DOWN).getType());
     }
 
     boolean begin() {
@@ -150,9 +157,9 @@ final class ActiveRide {
         }
         restoreBlocks();
         physics.values().forEach(EntityPhysics::restore);
+        List<Player> listeners = new ArrayList<>();
         if (arrivalSound && settings.soundEnabled()) {
-            involved().filter(Player.class::isInstance).map(Player.class::cast).forEach(player ->
-                    SoundEffects.arrival(player, settings.relativeVolume(1.0D), 0.5F));
+            involved().filter(Player.class::isInstance).map(Player.class::cast).forEach(listeners::add);
         }
         passengers.clear();
         freezers.clear();
@@ -160,6 +167,14 @@ final class ActiveRide {
         releaseShaftChunks();
         onFinished.accept(this);
         ConfigLoader.debug(plugin.getLogger(), settings, "Lift finished and restored its temporary state");
+        // Audio runs only after ride state and blocks have been released.
+        for (Player listener : listeners) {
+            try {
+                chimes.play(listener, chimeProfile, settings.relativeVolume(1.0D));
+            } catch (RuntimeException exception) {
+                plugin.getLogger().log(Level.WARNING, "Could not play lift arrival chime", exception);
+            }
+        }
     }
 
     private void tick() {

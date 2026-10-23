@@ -1,6 +1,7 @@
 package com.playcity.simplelift.config;
 
 import com.playcity.simplelift.util.MaterialGlob;
+import com.playcity.simplelift.compat.ButtonTags;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,7 +127,8 @@ public final class ConfigLoader {
                 signMaterials,
                 shaftMaterials,
                 musicMaterials,
-                messages
+                messages,
+                parseArrivalChimes(config, buttonMaterials)
         );
     }
 
@@ -141,6 +143,66 @@ public final class ConfigLoader {
         } catch (IOException exception) {
             throw new LiftConfigurationException("Could not read bundled config.yml", exception);
         }
+    }
+
+    private static Map<Material, ButtonChimes.Profile> parseArrivalChimes(
+            FileConfiguration config, Set<Material> buttons) {
+        ButtonChimes policy = parseChimePolicy(config, buttons);
+        Map<Material, ButtonChimes.Profile> result = new EnumMap<>(Material.class);
+        for (Material button : buttons) {
+            result.put(button, policy.select(button.name(), tag -> ButtonTags.contains(tag, button)));
+        }
+        return result;
+    }
+
+    static ButtonChimes parseChimePolicy(FileConfiguration config, Set<Material> buttons) {
+        try {
+            if (config.contains("arrivalChimes") && !config.isConfigurationSection("arrivalChimes")) {
+                throw new IllegalArgumentException("arrivalChimes must be a mapping");
+            }
+            if (config.contains("arrivalChimes.default") && !config.isString("arrivalChimes.default")) {
+                throw new IllegalArgumentException("arrivalChimes.default must be a profile name");
+            }
+            ButtonChimes.Profile fallback = ButtonChimes.Profile.parse(config.getString("arrivalChimes.default", "legacy"));
+            Map<String, ButtonChimes.Profile> tags = chimeMappings(config, "arrivalChimes.tags");
+            for (String tag : tags.keySet()) {
+                if (!Arrays.asList("minecraft:wooden_buttons", "minecraft:stone_buttons", "minecraft:buttons").contains(tag)) {
+                    throw new IllegalArgumentException("Unknown button tag: " + tag);
+                }
+            }
+            Map<String, ButtonChimes.Profile> materials = chimeMappings(config, "arrivalChimes.materials");
+            for (String name : materials.keySet()) {
+                Material material = Material.getMaterial(name);
+                if (material == null || !buttons.contains(material)) {
+                    throw new IllegalArgumentException("Material must match buttonBlocks on this server: " + name);
+                }
+            }
+            return new ButtonChimes(fallback, tags, materials);
+        } catch (IllegalArgumentException exception) {
+            throw new LiftConfigurationException("arrivalChimes: " + exception.getMessage(), exception);
+        }
+    }
+
+    private static Map<String, ButtonChimes.Profile> chimeMappings(FileConfiguration config, String path) {
+        Object raw = config.get(path);
+        if (raw != null && !(raw instanceof ConfigurationSection)) {
+            throw new IllegalArgumentException(path + " must be a mapping");
+        }
+        ConfigurationSection section;
+        if (!config.isSet(path) && config.getDefaults() != null) {
+            section = config.getDefaults().getConfigurationSection(path);
+        } else {
+            section = config.getConfigurationSection(path);
+        }
+        Map<String, ButtonChimes.Profile> result = new LinkedHashMap<>();
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                Object value = section.get(key);
+                if (!(value instanceof String)) { throw new IllegalArgumentException(path + "." + key + " must be a profile name"); }
+                result.put(key, ButtonChimes.Profile.parse((String) value));
+            }
+        }
+        return result;
     }
 
     private static int boundedInt(FileConfiguration config, String key, int fallback, IntPredicate predicate,
@@ -243,29 +305,10 @@ public final class ConfigLoader {
         return result;
     }
 
-    private static LiftMessages parseMessages(FileConfiguration config) {
-        Map<String, String> fallbacks = new LinkedHashMap<>();
-        fallbacks.put("destination", "&7Destination");
-        fallbacks.put("currentFloor", "&7Current Floor");
-        fallbacks.put("cantEnter", "&7Can't enter elevator in use");
-        fallbacks.put("cantLeave", "&7Can't leave elevator in use");
-        fallbacks.put("oneFloor", "&7There is only one floor.");
-        fallbacks.put("unsafe", "&cIt is unsafe to leave a vehicle in a lift!");
-        fallbacks.put("floorNotExists", "&cFloor does not exist. Check shaft for blockage");
-        fallbacks.put("scrollSelectEnabled", "&7Scrollable floor selection enabled.");
-        fallbacks.put("scrollSelectDisabled", "&7Scrollable floor selection disabled");
-        fallbacks.put("scrollSelection", "&e▲ &fFloor {floor} {name} &7({index}/{total}) &e▼");
-        fallbacks.put("scrollSelectConfirmed", "&aSelected floor {floor} {name}.");
-        fallbacks.put("scrollSelectTimedOut", "&7Floor selection timed out.");
-        fallbacks.put("scrollSelectBusy", "&cAnother player is selecting a floor on this sign.");
-        fallbacks.put("timeout", "&7You have been teleported to the destination due to timeout");
-        fallbacks.put("busy", "&cThis lift is already moving.");
-        fallbacks.put("noPermission", "&cYou do not have permission.");
-        fallbacks.put("internalError", "&cAn internal error occurred while processing this lift.");
-
+    static LiftMessages parseMessages(FileConfiguration config) {
         Map<String, String> values = new LinkedHashMap<>();
-        for (Map.Entry<String, String> entry : fallbacks.entrySet()) {
-            values.put(entry.getKey(), color(config.getString("messages." + entry.getKey(), entry.getValue())));
+        for (Map.Entry<String, String> entry : MessageCatalog.load(config).entrySet()) {
+            values.put(entry.getKey(), color(entry.getValue()));
         }
         return new LiftMessages(
                 values.get("destination"),
@@ -284,7 +327,7 @@ public final class ConfigLoader {
                 values.get("timeout"),
                 values.get("busy"),
                 values.get("noPermission"),
-                values.get("internalError")
+                values.get("internalError"), values
         );
     }
 

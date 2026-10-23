@@ -3,6 +3,14 @@
 # automatically on the first start when this file does not exist.
 configVersion: 2
 
+# Built-in locales: en (en_US), en_GB, bg, cs, da, de, el, es, et, fi, fr, hu,
+# it, ja, ko, lt, nl, no, pl, pt (pt_PT), pt_BR, ro, ru, sv, tr, uk, vi,
+# zh (zh_CN), zh_HK, and zh_TW. Hyphenated locale tags work too (for example,
+# pt-BR and zh-Hant). Bundled locales ignore messages below; custom preserves them.
+# Use en for English screenshots, then /lift reload and interact with each lift.
+# Floor names are operator text and are never translated.
+language: custom
+
 # Every scan is bounded by this footprint and by the world's build height.
 maxLiftArea: 49
 maxHeight: 1023
@@ -66,6 +74,24 @@ baseBlocks:
 
 soundEnabled: true
 soundVolume: 100
+
+# Arrival only. Priority: exact material > wooden/stone tag > buttons tag > default.
+# Uses the server's vanilla block tags; missing stone_buttons uses known vanilla
+# stone button materials on old servers. Profiles: legacy, warm, clear, hotel, crystal, silent.
+# Each arrangement uses built-in client sounds. No sound files or resource pack.
+# warm/clear: descending two-note bells, 8 ticks apart, at legacy per-note volume.
+# hotel: low descending three-note CHIME, at 0/5/12 ticks (0/0.25/0.6 s at 20 TPS).
+# Omit tags to use the pilot defaults below; tags: {} keeps only default/materials.
+arrivalChimes:
+  default: legacy
+  tags:
+    "minecraft:wooden_buttons": warm
+    "minecraft:stone_buttons": crystal
+  materials: {}
+  # To override a material, replace materials: {} with:
+  # materials:
+  #   OAK_BUTTON: hotel
+  #   STONE_BUTTON: legacy
 
 messages:
   destination: "&7Destination"

@@ -69,14 +69,15 @@ public final class SimpleLiftPlugin extends JavaPlugin {
         try {
             LiftSettings candidate = ConfigLoader.load(this);
             settings = candidate;
+            if (rideManager != null) { rideManager.cancelChimes(); }
             if (liftListener != null) {
                 liftListener.settingsReloaded();
             }
-            sender.sendMessage("SimpleLift configuration reloaded.");
+            sender.sendMessage(settings.messages().text("reloadSucceeded"));
             getLogger().info("Configuration reloaded successfully");
             return true;
         } catch (LiftConfigurationException exception) {
-            sender.sendMessage("SimpleLift configuration was not reloaded: " + exception.getMessage());
+            sender.sendMessage(settings().messages().text("reloadFailed").replace("{error}", exception.getMessage()));
             getLogger().log(Level.WARNING,
                     "Configuration reload failed; keeping the last known-good settings", exception);
             return false;

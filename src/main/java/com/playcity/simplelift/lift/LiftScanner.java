@@ -62,11 +62,11 @@ public final class LiftScanner {
                 .filter(floor -> floor.buttonY() == button.getY())
                 .findFirst()
                 .orElseThrow(() -> new LiftUserException(
-                        "This floor does not belong to the lift. Check the shaft for blockage."));
+                        settings.messages().text("floorNotInLift")));
         LiftSign initialSign = currentFloor.signs().stream()
                 .filter(sign -> sign.block().getX() == button.getX() && sign.block().getZ() == button.getZ())
                 .findFirst()
-                .orElseThrow(() -> new LiftUserException("Could not find the sign above this lift button."));
+                .orElseThrow(() -> new LiftUserException(settings.messages().text("signNotFound")));
 
         LiftStructure structure = new LiftStructure(settings, baseBlocks, floors, currentFloor, initialSign);
         structure.initializeInvalidSigns();
@@ -107,7 +107,7 @@ public final class LiftScanner {
                     block -> block.getType() == type);
         } catch (BoundedFloodFill.SizeLimitExceededException exception) {
             throw new LiftUserException(
-                    "Lift footprint exceeds maxLiftArea (" + exception.maximumSize() + ").");
+                    settings.messages().text("footprintExceeded").replace("{max}", Integer.toString(exception.maximumSize())));
         }
     }
 

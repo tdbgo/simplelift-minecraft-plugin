@@ -68,6 +68,18 @@ public final class LiftSign {
         return line(CURRENT_NAME_LINE);
     }
 
+    public void refreshLabels(LiftMessages messages, int currentLevel) {
+        Sign sign = currentSign();
+        String current = messages.currentFloor() + ": " + currentLevel;
+        String destination = messages.destination() + ": " + destinationLevel();
+        if (line(CURRENT_LEVEL_LINE).equals(current) && line(DESTINATION_LEVEL_LINE).equals(destination)) { return; }
+        setLine(sign, CURRENT_LEVEL_LINE, current);
+        setLine(sign, DESTINATION_LEVEL_LINE, destination);
+        if (!sign.update(true, false)) {
+            throw new LiftUserException("Could not update the lift sign at " + block.getLocation());
+        }
+    }
+
     public void update(LiftMessages messages, LiftFloor current, LiftFloor destination) {
         Sign sign = currentSign();
         setLine(sign, CURRENT_LEVEL_LINE, messages.currentFloor() + ": " + current.level());

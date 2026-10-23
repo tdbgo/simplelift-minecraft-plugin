@@ -1,6 +1,7 @@
 package com.playcity.simplelift.config;
 
 public final class LiftMessages {
+    private final java.util.Map<String, String> text;
 
     private final String destination;
     private final String currentFloor;
@@ -24,7 +25,8 @@ public final class LiftMessages {
             String oneFloor, String unsafe, String floorNotExists, String scrollSelectEnabled,
             String scrollSelectDisabled, String scrollSelection, String scrollSelectConfirmed,
             String scrollSelectTimedOut, String scrollSelectBusy, String timeout, String busy,
-            String noPermission, String internalError) {
+            String noPermission, String internalError, java.util.Map<String, String> text) {
+        this.text = java.util.Collections.unmodifiableMap(new java.util.LinkedHashMap<>(text));
         this.destination = destination;
         this.currentFloor = currentFloor;
         this.cantEnter = cantEnter;
@@ -45,6 +47,7 @@ public final class LiftMessages {
     }
 
     public String destination() { return destination; }
+    public String text(String key) { return text.get(key); }
     public String currentFloor() { return currentFloor; }
     public String cantEnter() { return cantEnter; }
     public String cantLeave() { return cantLeave; }

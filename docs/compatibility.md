@@ -2,11 +2,24 @@
 
 [한국어](compatibility.ko.md)
 
-SimpleLift 0.3.0-SNAPSHOT targets Minecraft 1.13 through 26.2 with one Java 8 bytecode JAR.
+SimpleLift 0.3.3-SNAPSHOT targets Minecraft 1.13 through 26.3 with one Java 8 bytecode JAR.
 
 The implementation uses the Spigot 1.13.2 API and a small compatibility layer. It does not use NMS or Minecraft implementation classes. Not every intermediate release was tested.
 
-## Verified matrix
+## 0.3.3-SNAPSHOT validation
+
+| Target | JVM or build condition | Result |
+|---|---|---|
+| Spigot API `1.13.2-R0.1-SNAPSHOT` | JDK 21, `--release 8` | Clean build and JUnit 47/47 |
+| Paper API `26.3.build.218-stable` | JDK 25, `--release 8` | Clean cross-compile and JUnit 47/47 |
+| Paper `26.3`, build 157 | Java 25.0.4.1 | Existing 0.3.3-26.3-beta.2 JAR enabled normally |
+
+The existing 26.3 JAR's executable classes and resources match the published
+0.3.3-SNAPSHOT JAR; only `plugin.yml` and manifest version metadata differ.
+The 26.3 runtime evidence confirms startup only. Full ride scenarios and
+client listening checks were not repeated for this release.
+
+## 0.3.0-SNAPSHOT verified matrix
 
 | Target | JVM or build condition | Result |
 |---|---|---|

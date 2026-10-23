@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.playcity"
-version = "0.3.0-SNAPSHOT"
+version = "0.3.3-SNAPSHOT"
 
 val apiGroup: String by project
 val apiArtifact: String by project
@@ -40,6 +40,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.13.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("$apiGroup:$apiArtifact:$apiVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -60,6 +61,7 @@ tasks.processResources {
 
 tasks.jar {
     archiveBaseName.set("SimpleLift")
+    from("LICENSE", "THIRD_PARTY_NOTICES.md")
     manifest {
         attributes(
             "Implementation-Title" to project.name,
@@ -67,6 +69,10 @@ tasks.jar {
             "Built-Jdk-Spec" to javaRelease
         )
     }
+}
+
+tasks.named<Jar>("sourcesJar") {
+    from("LICENSE", "THIRD_PARTY_NOTICES.md")
 }
 
 tasks.test {

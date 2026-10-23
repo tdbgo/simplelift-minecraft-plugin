@@ -2,11 +2,24 @@
 
 [English](compatibility.md)
 
-SimpleLift 0.3.0-SNAPSHOT은 하나의 Java 8 바이트코드 JAR로 Minecraft 1.13부터 26.2까지를 지원 대상으로 합니다.
+SimpleLift 0.3.3-SNAPSHOT은 하나의 Java 8 바이트코드 JAR로 Minecraft 1.13부터 26.3까지를 지원 대상으로 합니다.
 
 구현은 Spigot 1.13.2 API와 작은 호환 계층을 사용합니다. NMS나 마인크래프트 구현 클래스는 사용하지 않습니다. 모든 중간 버전을 실행한 것은 아닙니다.
 
-## 검증 결과
+## 0.3.3-SNAPSHOT 검증
+
+| 대상 | JVM 또는 빌드 조건 | 결과 |
+|---|---|---|
+| Spigot API `1.13.2-R0.1-SNAPSHOT` | JDK 21, `--release 8` | 클린 빌드와 JUnit 47/47 |
+| Paper API `26.3.build.218-stable` | JDK 25, `--release 8` | 클린 교차 컴파일과 JUnit 47/47 |
+| Paper `26.3`, 빌드 157 | Java 25.0.4.1 | 기존 0.3.3-26.3-beta.2 JAR 정상 활성화 |
+
+기존 26.3 JAR의 실행 클래스와 리소스는 게시된 0.3.3-SNAPSHOT과 같으며,
+차이는 `plugin.yml`과 매니페스트의 버전 메타데이터뿐입니다.
+26.3 런타임 기록은 시작만 확인한 것입니다. 이 릴리스의 전체 운행 시나리오와
+클라이언트 청음 확인은 아직 반복하지 않았습니다.
+
+## 0.3.0-SNAPSHOT 검증 결과
 
 | 대상 | JVM 또는 빌드 조건 | 결과 |
 |---|---|---|

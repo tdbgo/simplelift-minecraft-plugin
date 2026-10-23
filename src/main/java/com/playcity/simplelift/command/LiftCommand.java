@@ -23,8 +23,8 @@ public final class LiftCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0 || args[0].equalsIgnoreCase("info")) {
-            sender.sendMessage("SimpleLift " + plugin.pluginVersion()
-                    + " - Minecraft 1.13-26.2, Lift/LiftReloaded compatible");
+            sender.sendMessage(plugin.settings().messages().text("commandInfo")
+                    .replace("{version}", plugin.pluginVersion()));
             return true;
         }
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {

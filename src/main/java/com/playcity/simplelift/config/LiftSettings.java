@@ -36,6 +36,7 @@ public final class LiftSettings {
     private final Set<Material> shaftMaterials;
     private final Set<Material> musicMaterials;
     private final LiftMessages messages;
+    private final Map<Material, ButtonChimes.Profile> arrivalChimes;
 
     public LiftSettings(boolean debug, int maxLiftArea, int maxHeight, int minHeight,
             boolean autoPlace, boolean preventEntry, boolean preventLeave, boolean liftMobs,
@@ -44,7 +45,7 @@ public final class LiftSettings {
             int secondsUntilTimeout, boolean redstone, boolean soundEnabled, int soundVolume,
             Map<Material, Double> baseSpeeds, Set<Material> floorMaterials,
             Set<Material> buttonMaterials, Set<Material> signMaterials, Set<Material> shaftMaterials,
-            Set<Material> musicMaterials, LiftMessages messages) {
+            Set<Material> musicMaterials, LiftMessages messages, Map<Material, ButtonChimes.Profile> arrivalChimes) {
         this.debug = debug;
         this.maxLiftArea = maxLiftArea;
         this.maxHeight = maxHeight;
@@ -70,6 +71,7 @@ public final class LiftSettings {
         this.shaftMaterials = immutableSet(shaftMaterials);
         this.musicMaterials = immutableSet(musicMaterials);
         this.messages = messages;
+        this.arrivalChimes = Collections.unmodifiableMap(new LinkedHashMap<>(arrivalChimes));
     }
 
     public boolean debug() { return debug; }
@@ -97,6 +99,9 @@ public final class LiftSettings {
     public Set<Material> shaftMaterials() { return shaftMaterials; }
     public Set<Material> musicMaterials() { return musicMaterials; }
     public LiftMessages messages() { return messages; }
+    public ButtonChimes.Profile arrivalChime(Material button) {
+        return arrivalChimes.getOrDefault(button, ButtonChimes.Profile.LEGACY);
+    }
 
     public boolean isBase(Block block) {
         return baseSpeeds.containsKey(block.getType());

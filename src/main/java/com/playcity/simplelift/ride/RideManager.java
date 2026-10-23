@@ -1,6 +1,7 @@
 package com.playcity.simplelift.ride;
 
 import com.playcity.simplelift.lift.LiftFloor;
+import com.playcity.simplelift.compat.ArrivalChimes;
 import com.playcity.simplelift.lift.ShaftBounds;
 import com.playcity.simplelift.lift.LiftStructure;
 import com.playcity.simplelift.lift.LiftUserException;
@@ -21,11 +22,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class RideManager {
 
     private final JavaPlugin plugin;
+    private final ArrivalChimes chimes;
     private final Set<ActiveRide> activeRides = new LinkedHashSet<>();
     private final Map<UUID, Location> pendingSafeTeleports = new LinkedHashMap<>();
 
     public RideManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.chimes = new ArrivalChimes(plugin);
     }
 
     public boolean start(LiftStructure structure) {
@@ -38,7 +41,7 @@ public final class RideManager {
             throw new LiftUserException(structure.settings().messages().busy());
         }
 
-        ActiveRide ride = new ActiveRide(plugin, structure, destination, activeRides::remove);
+        ActiveRide ride = new ActiveRide(plugin, structure, destination, activeRides::remove, chimes);
         if (!ride.begin()) {
             return false;
         }
@@ -68,6 +71,7 @@ public final class RideManager {
     }
 
     public void handleQuit(Player player) {
+        chimes.cancel(player.getUniqueId());
         for (ActiveRide ride : new ArrayList<ActiveRide>(activeRides)) {
             if (!ride.contains(player)) {
                 continue;
@@ -110,10 +114,13 @@ public final class RideManager {
     }
 
     public void shutdown() {
+        chimes.cancelAll();
         for (ActiveRide ride : new ArrayList<>(activeRides)) {
             ride.finish(false);
         }
         activeRides.clear();
         pendingSafeTeleports.clear();
     }
+
+    public void cancelChimes() { chimes.cancelAll(); }
 }
